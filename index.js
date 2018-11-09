@@ -67,7 +67,10 @@ const childProcess = require('child_process');
   });
 
   const dir = path.join(process.cwd(), 'dist');
-  const pullRequest = process.env.TRAVIS_PULL_REQUEST;
+  let pullRequest = process.env.TRAVIS_PULL_REQUEST;
+  if (pullRequest) {
+    pullRequest = pullRequest !== 'false' ? pullRequest : false;
+  }
   const siteName = repoSlug.split('/')[1];
   const siteFullName = pullRequest ? `${siteName}/pr-${pullRequest}` : siteName;
 
