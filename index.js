@@ -79,9 +79,11 @@ const childProcess = require('child_process');
     'build',
   ];
 
-  if (build === 'prod') {
+  if (build !== 'alpha') {
     wpBuildBuildOptions.push('--prod');
-  } else {
+  }
+
+  if (build !== 'prod') {
     wpBuildBuildOptions.push(`--deploy-url=${siteFullName}`);
   }
 
@@ -195,12 +197,11 @@ const childProcess = require('child_process');
 
 async function prepareTemplate(file, repoSlug, projectConfig, build, salt, siteName) {
   const project = projectConfig.data.project;
-  const db = project.db[build];
-  const dbArray = db.split('@');
+  const db = project.db[build === 'alpha' ? 'alpha' : 'prod'];
+  const dbArray = db.split(':');
   const dbUser = dbArray[0];
-  const dbNamePassword = dbArray[1].split(':');
-  const dbName = dbNamePassword[0];
-  const dbPassword = dbNamePassword[1];
+  const dbName = dbArray[0];
+  const dbPassword = dbArray[1];
 
   const wpDebug = build === 'alpha' ? 'true' : 'false';
 
