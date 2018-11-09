@@ -1,16 +1,17 @@
 language: node_js
 node_js:
-  - 8
+- 8
 cache:
   directories:
   - node_modules
 before_script:
-  - npm install
+- npm install
 before_deploy:
-  - npm pack
+- npm pack
 deploy:
   - provider: releases
-    api_key: $GITHUB_TOKEN
+    api_key:
+      secure: mkhP/tUJ/DnrKEcZa8wXWjdyUgBJCnqhMq+pLsmUJIXnUVi8s3GwsrugB5aMnYYyruAQM7IPY3IPrnb42S+u//CBQCw1JQtvAQvLjO+tpF0/qzwHxm73AOOPW37DGBkDFiMkzEmihRIDlWI241CMziKY6lGzmy1cn/tVgTZI0IiRMHGeM1yqpV8iG/EA0slWvNvZlmfI3zu+80oyrXdQUeBhjo1F8bzeeMivd3+TtyJp1Be0JN0gJ94Va/1YP6bULCQOD2xKA2Nh0jerJh8NCQHjSi87AePyvArMPvD2kQ2iZMkz9U+tR/dhiU32rG4EK9I0mzDc9Cfn/Hd5lpdFItXbevKcn6GGY9+bdnYcfnzCXYT6hwEU5qZ22vd7AtUZ8/aslcM895u2ad3e2gTIakPHMHW+k0SN/pEjzdExXYylziDYNAh6mMP0xIpxypr01MkZHNUM4rT9/0P2BMThjOUUCARBXJdjdMCayNFTx1pdAEOukkOH7np623AVWHx9TJ0z7rNbbYQ6pu3KUN7RtgqmUxn5VSlFlDzQKH1OrSW5fVfQ4EF4nI7LsZHKeUBrasq8aC59Ae4DSyjwgQUObxQQ5eM8V2MQUZeo7fKcq02yiTVdCpXP6yzTT9gmygnWDLVx296s6uV7oiSDCsGDkgGvJYK0Au5jQFKX2lwJo8o=
     file_glob: true
     file: "it-quasar-01cat-deploy-*.tgz"
     skip_cleanup: true
