@@ -164,6 +164,10 @@ const childProcess = require('child_process');
     wpBuildDeployOptions.push('--exclude="wp-content/uploads"');
   }
 
+  if (!pullRequest && build !== 'prod') {
+    wpBuildDeployOptions.push('--exclude="pr-*"');
+  }
+
   if (build !== 'prod') {
     wpBuildDeployOptions.push('--keep-clean');
   }
