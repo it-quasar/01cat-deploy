@@ -86,8 +86,14 @@ const childProcess = require('child_process');
     return;
   }
 
-  const siteName = repoSlug.split('/')[1];
-  const siteFullName = pullRequest ? `${siteName}/pr-${pullRequest}` : siteName;
+  let siteName = '';
+  if (build === 'prod') {
+    siteName = '';
+  } else {
+    siteName = repoSlug.split('/')[1];
+    siteName = pullRequest ? `${siteName}/pr-${pullRequest}` : siteName;
+    siteName = siteName + '/';
+  }
 
   // Соберем приложение
   const wpBuildBuildOptions = [
@@ -99,7 +105,7 @@ const childProcess = require('child_process');
   }
 
   if (build !== 'prod') {
-    wpBuildBuildOptions.push(`--deploy-url=${siteFullName}`);
+    wpBuildBuildOptions.push(`--deploy-url=${siteName}`);
   }
 
   const wpBuildBuildCommand = `wpbuild ${wpBuildBuildOptions.join(' ')}`;
@@ -137,7 +143,7 @@ const childProcess = require('child_process');
       // Ничего не делаем
     }
 
-    const newFileContent = await prepareTemplate(file, repoSlug, projectConfig, build, salt, siteFullName);
+    const newFileContent = await prepareTemplate(file, repoSlug, projectConfig, build, salt, siteName);
     fs.writeFileSync(newFileFullPath, newFileContent);
     process.stdout.write(`Created file ${newFileFullPath}\n`);
   }
@@ -162,8 +168,8 @@ const childProcess = require('child_process');
   const ftpPassword = ftp.split(':')[1];
   const host = build === 'prod' ? project.prod.host : projectConfig.data.hosts[build];
 
-  const remoteFolder = build !== 'prod' ? `${siteFullName}/` : `public_html`;
-  const backupFolder = build !== 'prod' ? `__backups/${siteFullName}` : `__backups`;
+  const remoteFolder = build !== 'prod' ? `${siteName}/` : `public_html`;
+  const backupFolder = build !== 'prod' ? `__backups/${siteName}` : `__backups`;
 
   const wpBuildDeployOptions = [
     'ssh-deploy',
