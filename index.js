@@ -41,10 +41,9 @@ const childProcess = require('child_process');
 
   const projectConfig = await new Promise(resolve => {
     request({
-      url: url,
-      json: true
+      url,
+      json: true,
     }, (error, response, body) => {
-
       if (!error && response.statusCode === 200) {
         resolve(body);
       }
@@ -59,7 +58,7 @@ const childProcess = require('child_process');
     });
   });
 
-  const globResult = glob.sync(path.join(__dirname, 'templates', '**/*'), { dot: true });
+  const globResult = glob.sync(path.join(__dirname, 'templates', '**/*'), {dot: true});
   const files = globResult.filter(file => {
     const stat = fs.lstatSync(file);
     return stat.isFile();
@@ -107,12 +106,14 @@ const childProcess = require('child_process');
   process.stdout.write(`Wpbuild success...\n\n`);
 
   // Подготовим файлы из шаблонов
-  for(const file of files) {
+  for (const file of files) {
     const newFileName = path.basename(file);
     const newFileFullPath = path.join(dir, newFileName);
     try {
       fs.unlinkSync(newFileFullPath);
-    } catch (e) { }
+    } catch (e) {
+      // Ничего не делаем
+    }
 
     const newFileContent = await prepareTemplate(file, repoSlug, projectConfig, build, salt, siteFullName);
     fs.writeFileSync(newFileFullPath, newFileContent);
@@ -124,7 +125,9 @@ const childProcess = require('child_process');
     const newFileFullPath = path.join(dir, 'wp-content', 'uploads');
     try {
       fs.unlinkSync(newFileFullPath);
-    } catch (e) { }
+    } catch (e) {
+      // Ничего не делаем
+    }
 
     fs.symlinkSync('../../wp-content/uploads', newFileFullPath);
     process.stdout.write(`Created symlink ${newFileFullPath}\n`);
@@ -151,7 +154,7 @@ const childProcess = require('child_process');
   ];
 
   if (!pullRequest) {
-    wpBuildDeployOptions.push('--exclude="wp-content/uploads"')
+    wpBuildDeployOptions.push('--exclude="wp-content/uploads"');
   }
 
   if (build !== 'prod') {
@@ -161,9 +164,10 @@ const childProcess = require('child_process');
   const wpBuildDeployCommand = `wpbuild ${wpBuildDeployOptions.join(' ')}`;
   process.stdout.write(`Run wpbuild "${wpBuildDeployCommand}"...\n`);
   await (new Promise((resolve, reject) => {
-    const rsync = childProcess.spawn(path.join(process.cwd(), 'node_modules', '.bin', 'wpbuild'), wpBuildDeployOptions, {
-      shell: true,
-    });
+    const rsync = childProcess.spawn(path.join(process.cwd(), 'node_modules', '.bin', 'wpbuild'),
+        wpBuildDeployOptions, {
+          shell: true,
+        });
 
     rsync.stdout.on('data', data => {
       process.stdout.write(data.toString());
@@ -197,10 +201,10 @@ async function prepareTemplate(file, repoSlug, projectConfig, build, salt, siteN
 
   const fileContent = fs.readFileSync(file, 'utf-8');
   return fileContent
-    .replace(/%SITE_NAME%/g, siteName)
-    .replace(/%DB_NAME%/g, dbName)
-    .replace(/%DB_USER%/g, dbUser)
-    .replace(/%DB_PASSWORD%/g, dbPassword)
-    .replace(/%UNIQUE_KEYS_AND_SALTS%/g, salt)
-    .replace(/%WP_DEBUG%/g, wpDebug);
+      .replace(/%SITE_NAME%/g, siteName)
+      .replace(/%DB_NAME%/g, dbName)
+      .replace(/%DB_USER%/g, dbUser)
+      .replace(/%DB_PASSWORD%/g, dbPassword)
+      .replace(/%UNIQUE_KEYS_AND_SALTS%/g, salt)
+      .replace(/%WP_DEBUG%/g, wpDebug);
 }
