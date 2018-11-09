@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": false,
   "scripts": {
-    "test": "npm run eslint",
+    "test": "eslint *.js",
     "version": "git add package.json && git commit -m 'new version'",
     "postversion": "git push && git push --tags"
   },
