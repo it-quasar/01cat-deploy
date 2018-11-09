@@ -1,0 +1,47 @@
+SetEnv SITE_NAME %SITE_NAME%
+
+# ENABLE PHP LOG
+php_flag display_startup_errors off
+php_flag display_errors off
+php_flag html_errors off
+php_flag log_errors on
+php_flag ignore_repeated_errors off
+php_flag ignore_repeated_source off
+php_flag report_memleaks on
+php_flag track_errors on
+php_value docref_root 0
+php_value docref_ext 0
+php_value error_log ../PHP_errors.log
+php_value error_reporting 2047
+php_value log_errors_max_len 0
+
+<Files PHP_errors.log>
+    Order allow,deny
+    Deny from all
+    Satisfy All
+</Files>
+# END ENABLE PHP LOG
+
+# Redirect to HTTPS
+RewriteEngine On
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# END Redirect to HTTPS
+
+# Redirect to non www.*
+RewriteEngine On
+RewriteBase /
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+# END Redirect to non www.*
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /%{ENV:SITE_NAME}/
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /%{ENV:SITE_NAME}/index.php [L]
+</IfModule>
+# END WordPress
