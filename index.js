@@ -92,7 +92,7 @@ const childProcess = require('child_process');
   } else {
     siteName = repoSlug.split('/')[1];
     siteName = pullRequest ? `${siteName}/pr-${pullRequest}` : siteName;
-    siteName = siteName + '/';
+    siteName = `${siteName}/`;
   }
 
   // Соберем приложение
