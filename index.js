@@ -71,6 +71,12 @@ const childProcess = require('child_process');
   if (pullRequest) {
     pullRequest = pullRequest !== 'false' ? pullRequest : false;
   }
+  const branch = process.env.TRAVIS_BRANCH;
+  if (branch !== 'master') {
+    // Не развораичваем проект для веток, отличных от master
+    return;
+  }
+
   const siteName = repoSlug.split('/')[1];
   const siteFullName = pullRequest ? `${siteName}/pr-${pullRequest}` : siteName;
 
