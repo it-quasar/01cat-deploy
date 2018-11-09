@@ -76,7 +76,13 @@ const childProcess = require('child_process');
   const tag = process.env.TRAVIS_TAG;
   if (branch !== 'master' && branch !== tag) {
     // Не развораичваем проект для веток, отличных от master
-    process.stdout.write('TRAVIS_BRANCH is not master. Skipped build.');
+    process.stdout.write('TRAVIS_BRANCH is not master and TRAVIS_BRANCH != TRAVIS_TAG. Skipped build.');
+    return;
+  }
+
+  if (tag && build !== 'prod') {
+    // Не развораичваем проект для тегов, если сборка не prod
+    process.stdout.write('Build run on tag, but build not prod. Skipped build.');
     return;
   }
 
