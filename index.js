@@ -71,8 +71,10 @@ const childProcess = require('child_process');
   if (pullRequest) {
     pullRequest = pullRequest !== 'false' ? pullRequest : false;
   }
+
   const branch = process.env.TRAVIS_BRANCH;
-  if (branch !== 'master') {
+  const tag = process.env.TRAVIS_TAG;
+  if (branch !== 'master' && branch !== tag) {
     // Не развораичваем проект для веток, отличных от master
     process.stdout.write('TRAVIS_BRANCH is not master. Skipped build.');
     return;
