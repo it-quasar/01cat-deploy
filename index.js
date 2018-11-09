@@ -74,6 +74,7 @@ const childProcess = require('child_process');
   const branch = process.env.TRAVIS_BRANCH;
   if (branch !== 'master') {
     // Не развораичваем проект для веток, отличных от master
+    process.stdout.write('TRAVIS_BRANCH is not master. Skipped build.');
     return;
   }
 
@@ -146,11 +147,12 @@ const childProcess = require('child_process');
     process.stdout.write(`Created symlink ${newFileFullPath}\n`);
   }
 
+  const project = projectConfig.data.project;
   // Развернем приложение
-  const ftp = projectConfig.data.ftp[build];
+  const ftp = build === 'prod' ? project.prod.ftp : projectConfig.data.ftp[build];
   const ftpUser = ftp.split(':')[0];
   const ftpPassword = ftp.split(':')[1];
-  const host = projectConfig.data.hosts[build];
+  const host = build === 'prod' ? project.prod.host : projectConfig.data.hosts[build];
 
   const remoteFolder = build !== 'prod' ? `${siteFullName}/` : `public_html`;
   const backupFolder = build !== 'prod' ? `__backups/${siteFullName}` : `__backups`;
