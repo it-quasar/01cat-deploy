@@ -1,0 +1,19 @@
+{
+  "extends": "tslint:latest",
+  "rules": {
+    "max-line-length": [
+      true,
+      120
+    ],
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape"
+    ],
+    "no-shadowed-variable": true,
+    "arrow-parens": [
+      true,
+      "ban-single-arg-parens"
+    ]
+  }
+}

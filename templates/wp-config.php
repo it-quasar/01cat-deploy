@@ -74,7 +74,11 @@ $table_prefix  = 'wp_';
  */
 define('WP_DEBUG', %WP_DEBUG%);
 
-$site_url = 'https://' . $_SERVER['HTTP_HOST'] . SITE_NAME;
+if (SITE_NAME) {
+  $site_url = 'https://' . $_SERVER['HTTP_HOST'] . '/' . SITE_NAME;
+} else {
+  $site_url = 'https://' . $_SERVER['HTTP_HOST'];
+}
 
 define('WP_SITEURL', $site_url . '/wordpress');
 define('WP_HOME', $site_url);
