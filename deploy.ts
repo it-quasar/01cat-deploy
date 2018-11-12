@@ -94,7 +94,7 @@ export async function deployApp({projectConfig, siteName, distDir, pullRequest, 
 
   const keepClean = build !== Build.Prod;
 
-  const rsh = `sshpass -p ${ftpPassword} ssh -oStrictHostKeyChecking=yes`;
+  const rsh = `sshpass -p ${ftpPassword} ssh -oStrictHostKeyChecking=no`;
 
   // Подготовим исключения
   const excluded = [
