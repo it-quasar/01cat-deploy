@@ -116,7 +116,7 @@ function deployApp(_a) {
                 case 2:
                     _b.sent();
                     process.stdout.write("Create backup folder " + backupFolder + " success\n\n");
-                    backup = path_1.join(backupFolder, project + "-" + moment().toISOString());
+                    backup = path_1.join(backupFolder, projectConfig.projectName + "-" + moment().toISOString());
                     process.stdout.write("Try copy " + remoteFolder + " to backup " + backup + "...\n");
                     return [4 /*yield*/, exec(conn, "cp -r " + remoteFolder + " " + backup + " || :")];
                 case 3:

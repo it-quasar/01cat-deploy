@@ -86,7 +86,7 @@ export async function deployApp({projectConfig, siteName, distDir, pullRequest, 
   process.stdout.write(`Create backup folder ${backupFolder}...\n`);
   await exec(conn, `mkdir -p ${backupFolder}`);
   process.stdout.write(`Create backup folder ${backupFolder} success\n\n`);
-  const backup = join(backupFolder, `${project}-${moment().toISOString()}`);
+  const backup = join(backupFolder, `${projectConfig.projectName}-${moment().toISOString()}`);
 
   process.stdout.write(`Try copy ${remoteFolder} to backup ${backup}...\n`);
   await exec(conn, `cp -r ${remoteFolder} ${backup} || :`);

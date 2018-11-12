@@ -4,9 +4,9 @@ import chalk from 'chalk';
 import * as request from 'request';
 import { buildApp } from './build';
 import { deployApp } from './deploy';
-import { exists } from 'fs';
 
 export interface IProjectConfig {
+  projectName: string;
   hosts: {
     alpha: string;
     beta: string;
@@ -133,7 +133,7 @@ function getProjectConfig(secret: string, repositorySlug: string): Promise<IProj
         if (body.success === false) {
           reject(body.message);
         } else {
-          resolve(body.data);
+          resolve({...body.data, projectName: repositorySlug.split('/')[1]});
         }
       }
     });
