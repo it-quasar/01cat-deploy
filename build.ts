@@ -3,8 +3,8 @@ import { lstatSync, readFileSync, symlinkSync, unlinkSync, writeFileSync } from 
 import { sync } from 'glob';
 import { basename, join } from 'path';
 import request = require('request');
-import { Build, IProjectConfig } from './index';
 import * as rimraf from 'rimraf';
+import { Build, IProjectConfig } from './index';
 
 interface IBuildOptions {
   projectConfig: IProjectConfig;
