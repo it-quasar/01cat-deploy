@@ -99,7 +99,7 @@ export enum Build {
   let pullRequest: false | string = false;
   const travisPullRequest = process.env.TRAVIS_PULL_REQUEST;
   if (travisPullRequest) {
-    pullRequest = travisPullRequest !== 'false' ? pullRequest : false;
+    pullRequest = travisPullRequest !== 'false' ? travisPullRequest : false;
   }
 
   // Вычислим имя сайта. Имя сайта не заканчивается на /
