@@ -120,7 +120,7 @@ export async function deployApp({projectConfig, siteName, distDir, pullRequest, 
     '--delete-after',
     `--rsh="${rsh}"`,
     ...exclude,
-    distDir,
+    `${distDir}/`,
     `${ftpUser}@${ftpHost}:${remoteFolder}`,
   ];
   const rsyncCommand = `rsync ${rsyncArgs.join(' ')}`;
