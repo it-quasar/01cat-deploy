@@ -6,6 +6,7 @@ cache:
     - node_modules
 before_script:
   - npm install
+  - node_modules/.bin/tsc
 before_deploy:
   - npm pack
 deploy:
