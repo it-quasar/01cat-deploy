@@ -145,7 +145,7 @@ function deployApp(_a) {
                         '--delete-after',
                         "--rsh=\"" + rsh + "\""
                     ].concat(exclude, [
-                        distDir,
+                        distDir + "/",
                         ftpUser + "@" + ftpHost + ":" + remoteFolder,
                     ]);
                     rsyncCommand = "rsync " + rsyncArgs.join(' ');
