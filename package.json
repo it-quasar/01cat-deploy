@@ -1,6 +1,6 @@
 {
   "name": "@it-quasar/01cat-deploy",
-  "version": "1.1.16",
+  "version": "1.1.17",
   "description": "Deploy utilite for 01cat.ru web-studio",
   "main": "index.js",
   "private": false,
