@@ -109,7 +109,7 @@ var Build;
                 pullRequest = false;
                 travisPullRequest = process.env.TRAVIS_PULL_REQUEST;
                 if (travisPullRequest) {
-                    pullRequest = travisPullRequest !== 'false' ? pullRequest : false;
+                    pullRequest = travisPullRequest !== 'false' ? travisPullRequest : false;
                 }
                 siteName = getSiteName(repositorySlug, pullRequest, build);
                 return [4 /*yield*/, getProjectConfig(secret, repositorySlug)];
