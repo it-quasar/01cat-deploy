@@ -6,6 +6,7 @@
   "private": false,
   "scripts": {
     "test": "tslint *.ts",
+    "preversion": "tsc && git add . && git commit -m 'new build'",
     "version": "git add package.json && git commit -m 'new version'",
     "postversion": "git push && git push --tags"
   },

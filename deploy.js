@@ -123,7 +123,7 @@ function deployApp(_a) {
                     _b.sent();
                     process.stdout.write("Try copy " + remoteFolder + " to backup " + backup + " success\n\n");
                     keepClean = build !== index_1.Build.Prod;
-                    rsh = "sshpass -p " + ftpPassword + " ssh -oStrictHostKeyChecking=yes";
+                    rsh = "sshpass -p " + ftpPassword + " ssh -oStrictHostKeyChecking=no";
                     excluded = [
                         'wp-content/languages',
                     ];

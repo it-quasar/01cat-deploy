@@ -40,8 +40,8 @@ var fs_1 = require("fs");
 var glob_1 = require("glob");
 var path_1 = require("path");
 var request = require("request");
-var index_1 = require("./index");
 var rimraf = require("rimraf");
+var index_1 = require("./index");
 /**
  * Собирает проект и возвращает путь к папке с собранным проектом
  */
