@@ -2,7 +2,6 @@ import { spawn } from 'child_process';
 import { lstatSync, readFileSync, symlinkSync, unlinkSync, writeFileSync } from 'fs';
 import { sync } from 'glob';
 import { basename, join } from 'path';
-import request = require('request');
 import * as rimraf from 'rimraf';
 import { Build, IProjectConfig } from './index';
 
@@ -68,22 +67,43 @@ export async function buildApp(options: IBuildOptions): Promise<string> {
   return distDir;
 }
 
-function getWPSalt(): Promise<string> {
-  return new Promise(resolve => {
-    request('https://api.wordpress.org/secret-key/1.1/salt/', (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        resolve(body);
-      }
-    });
-  });
+function getRandomString(count: number) {
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (let i = 0; i < count; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+}
+
+function getWPSalt(build: Build): string {
+  if (build !== Build.Prod) {
+    return `define('AUTH_KEY',         'put your unique phrase here');\n`
+      + `define('SECURE_AUTH_KEY',  'put your unique phrase here');\n`
+      + `define('LOGGED_IN_KEY',    'put your unique phrase here');\n`
+      + `define('NONCE_KEY',        'put your unique phrase here');\n`
+      + `define('AUTH_SALT',        'put your unique phrase here');\n`
+      + `define('SECURE_AUTH_SALT', 'put your unique phrase here');\n`
+      + `define('LOGGED_IN_SALT',   'put your unique phrase here');\n`
+      + `define('NONCE_SALT',       'put your unique phrase here');\n`;
+  } else {
+    return `define('AUTH_KEY',         '${getRandomString(20)}');\n`
+      + `define('SECURE_AUTH_KEY',  '${getRandomString(20)}');\n`
+      + `define('LOGGED_IN_KEY',    '${getRandomString(20)}');\n`
+      + `define('NONCE_KEY',        '${getRandomString(20)}');\n`
+      + `define('AUTH_SALT',        '${getRandomString(20)}');\n`
+      + `define('SECURE_AUTH_SALT', '${getRandomString(20)}');\n`
+      + `define('LOGGED_IN_SALT',   '${getRandomString(20)}');\n`
+      + `define('NONCE_SALT',       '${getRandomString(20)}');\n`;
+
+  }
 }
 
 async function copyTemplateFiles(
   options: IBuildOptions,
   distDir: string): Promise<void> {
-  const { projectConfig, siteName, pullRequest, build } = options;
-  // Получим соли для WP
-  const salt = await getWPSalt();
+  const { pullRequest } = options;
 
   // Найдем все файлы шаблонов
   const templateGlobResult = sync(join(__dirname, 'templates', '**/*'), { dot: true });
@@ -102,7 +122,7 @@ async function copyTemplateFiles(
       // Ничего не делаем
     }
 
-    const newFileContent = await prepareTemplateFile(options, file, salt);
+    const newFileContent = await prepareTemplateFile(options, file);
     writeFileSync(newFileFullPath, newFileContent);
     process.stdout.write(`Created file ${newFileFullPath}\n`);
   }
@@ -123,23 +143,36 @@ async function copyTemplateFiles(
 
 async function prepareTemplateFile({ projectConfig, build, siteName }: IBuildOptions,
                                    file: string,
-                                   salt: string,
 ): Promise<string> {
   const project = projectConfig.project;
-  const db = project.db[build === 'alpha' ? 'alpha' : 'prod'];
-  const dbArray = db.split(':');
-  const dbUser = dbArray[0];
-  const dbName = dbArray[0];
-  const dbPassword = dbArray[1];
+  const db = project.db[build === Build.Alpha ? 'alpha' : 'prod'];
+  const dbName = db.name;
+  const dbPassword = db.password;
+  const dbHost = db.host || 'localhost';
+  const dbUser = db.user || dbName;
 
-  const wpDebug = build === 'alpha' ? 'true' : 'false';
+  let publicPath = '';
+  if (build === Build.Prod) {
+    if (!project.prod) {
+      throw new Error('Not found project.prod config');
+    }
+    publicPath = project.prod.path;
+  } else {
+    publicPath = projectConfig.ftp[build].path;
+  }
+
+  const salt = getWPSalt(build);
+
+  const wpDebug = build === Build.Alpha ? 'true' : 'false';
 
   const fileContent = readFileSync(file, 'utf-8');
   return fileContent
     .replace(/%SITE_NAME%/g, siteName)
     .replace(/%DB_NAME%/g, dbName)
     .replace(/%DB_USER%/g, dbUser)
+    .replace(/%DB_HOST%/g, dbHost)
     .replace(/%DB_PASSWORD%/g, dbPassword)
-    .replace(/%UNIQUE_KEYS_AND_SALTS%/g, salt)
-    .replace(/%WP_DEBUG%/g, wpDebug);
+    .replace(/%WP_DEBUG%/g, wpDebug)
+    .replace(/%PUBLIC_PATH%/g, publicPath)
+    .replace(/%UNIQUE_KEYS_AND_SALTS%/g, salt);
 }

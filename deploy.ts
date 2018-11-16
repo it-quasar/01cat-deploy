@@ -3,7 +3,7 @@ import { spawn } from 'child_process';
 import * as moment from 'moment';
 import { join } from 'path';
 import { Client } from 'ssh2';
-import { Build, IProjectConfig } from './index';
+import { Build, IFtp, IProjectConfig } from './index';
 
 interface IConnectOptions {
   host: string;
@@ -59,18 +59,18 @@ interface IDeployOptions {
 
 export async function deployApp({projectConfig, siteName, distDir, pullRequest, build}: IDeployOptions): Promise<void> {
   const project = projectConfig.project;
-  let prod = {ftp: '', host: ''};
+  let ftp: IFtp;
   if (build === Build.Prod) {
     if (!project.prod) {
       throw new Error('Production config not found for ptoject');
-    } else {
-      prod = project.prod;
     }
+    ftp = project.prod;
+  } else {
+    ftp = projectConfig.ftp[build];
   }
-  const ftp = build === Build.Prod ? prod.ftp : projectConfig.ftp[build];
-  const ftpUser = ftp.split(':')[0];
-  const ftpPassword = ftp.split(':')[1];
-  const ftpHost = build === Build.Prod ? prod.host : projectConfig.hosts[build];
+  const ftpUser = ftp.user;
+  const ftpPassword = ftp.password;
+  const ftpHost = ftp.host;
 
   const remoteFolder = build !== Build.Prod ? `${siteName}/` : `public_html/`;
   const backupFolder = build !== Build.Prod ? `__backups/${siteName}/` : `__backups/`;
@@ -91,8 +91,6 @@ export async function deployApp({projectConfig, siteName, distDir, pullRequest, 
   process.stdout.write(`Try copy ${remoteFolder} to backup ${backup}...\n`);
   await exec(conn, `cp -r ${remoteFolder} ${backup} || :`);
   process.stdout.write(`Try copy ${remoteFolder} to backup ${backup} success\n\n`);
-
-  const keepClean = build !== Build.Prod;
 
   const rsh = `sshpass -p ${ftpPassword} ssh -oStrictHostKeyChecking=no`;
 
@@ -147,5 +145,15 @@ export async function deployApp({projectConfig, siteName, distDir, pullRequest, 
       resolve();
     });
   }));
+
   process.stdout.write(`Rsync success...\n\n`);
+
+  const keepClean = build !== Build.Prod;
+  if (keepClean) {
+    process.stdout.write(`Try remove backup ${backup}...\n`);
+    await exec(conn, `rm -rf ${backup}`);
+    process.stdout.write(`Try remove backup ${backup} success...\n\n`);
+  }
+
+  process.stdout.write(`Deploy finished\n`);
 }

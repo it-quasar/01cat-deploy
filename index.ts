@@ -5,25 +5,32 @@ import * as request from 'request';
 import { buildApp } from './build';
 import { deployApp } from './deploy';
 
+export interface IFtp {
+  host: string;
+  path: string;
+  user: string;
+  password: string;
+}
+
+export interface IDb {
+  name: string;
+  password: string;
+  user?: string;
+  host?: string;
+}
+
 export interface IProjectConfig {
   projectName: string;
-  hosts: {
-    alpha: string;
-    beta: string;
-  };
   ftp: {
-    alpha: string;
-    beta: string;
+    alpha: IFtp;
+    beta: IFtp;
   };
   project: {
     db: {
-      alpha: string;
-      prod: string;
+      alpha: IDb;
+      prod: IDb;
     };
-    prod?: {
-      ftp: string;
-      host: string;
-    }
+    prod?: IFtp;
   };
 }
 
